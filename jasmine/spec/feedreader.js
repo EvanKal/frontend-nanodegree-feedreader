@@ -72,25 +72,41 @@ $(function() {
           * should have two expectations: does the menu display when
           * clicked and does it hide when clicked again.
           */
+
+          // My original solution using an eventListener. Your thoughts on this?
+
+          // it('menu toggle', function () {
+          //   let getBody = document.querySelector("body");
+          //   let getMenuIcon = document.querySelector(".menu-icon-link");
+          //   let checkClick = false;
+          //
+          //   getMenuIcon.addEventListener('click', function() {
+          //     if(checkClick == false) {
+          //       checkClick = true;
+          //   } else {
+          //     checkClick = false;
+          //   }
+          // })
+          //
+          // if (checkClick == true) {
+          //   expect(getBody.classList.contains('menu-hidden')).not.toBe(true);
+          // }
+          // if (checkClick == false) {
+          //   expect(getBody.classList.contains('menu-hidden')).toBe(true);
+          // }
+          // });
+
           it('menu toggle', function () {
             let getBody = document.querySelector("body");
             let getMenuIcon = document.querySelector(".menu-icon-link");
             let checkClick = false;
 
-            getMenuIcon.addEventListener('click', function() {
-              if(checkClick == false) {
-                checkClick = true;
-            } else {
-              checkClick = false;
-            }
-          })
-
-          if (checkClick == true) {
+            getMenuIcon.dispatchEvent(new Event('click'));
             expect(getBody.classList.contains('menu-hidden')).not.toBe(true);
-          }
-          if (checkClick == false) {
+
+            getMenuIcon.dispatchEvent(new Event('click'));
             expect(getBody.classList.contains('menu-hidden')).toBe(true);
-          }
+
           });
 
     });
@@ -119,13 +135,50 @@ $(function() {
 
          });
 
-       });
+     });
 
     /* TODO: Write a new test suite named "New Feed Selection" */
+    describe('New Feed Selection', function() {
+      let feeds = '';
 
         /* TODO: Write a test that ensures when a new feed is loaded
          * by the loadFeed function that the content actually changes.
          * Remember, loadFeed() is asynchronous.
          */
+         beforeEach(function(done) {
+           loadFeed(0, function() {
+             done();
+           });
+         });
 
+         // This afterEach in order to reset to default feed
+         afterEach(function() {
+           loadFeed(0);
+         })
+
+         it('function', function (done) {
+           feeds = document.querySelector(".feed").querySelector("a").innerHTML;
+           // console.log(feeds);
+           expect(feeds).toBeDefined();
+           done();
+         })
+
+         describe('load next feeds', function () {
+           let newFeeds = '';
+
+           beforeEach(function(done) {
+             loadFeed(1, function() {
+               done();
+             });
+           });
+
+           it('new feed loaded', function(done){
+             newFeeds = document.querySelector(".feed").querySelector("a").innerHTML;
+             // console.log(newFeeds);
+             expect(feeds).not.toEqual(newFeeds);
+             done();
+           })
+
+         })
+    });
 }());
